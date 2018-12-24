@@ -92,3 +92,117 @@ Problems so far with scaffolding:
 ##No tests. This isn’t technically true—the scaffolding includes rudimentary tests—but the generated tests don’t test for data validation, authentication, or any other custom requirements.
 ##No style or layout. There is no consistent site styling or navigation.
 ##No real understanding. If you understand the scaffold code, you probably shouldn’t be reading this book.
+
+
+#2.3.1 Micropost Model and Scaffolding
+Model and routes
+##rails generate scaffold Micropost content:text user_id:integer
+Update database
+#rails db:migrate
+
+Note the structure of the controller template generated for Microposts: 
+```
+class MicropostsController < ApplicationController
+  .
+  .
+  .
+  def index
+    .
+    .
+    .
+  end
+
+  def show
+    .
+    .
+    .
+  end
+
+  def new
+    .
+    .
+    .
+  end
+
+  def edit
+    .
+    .
+    .
+  end
+
+  def create
+    .
+    .
+    .
+  end
+
+  def update
+    .
+    .
+    .
+  end
+
+  def destroy
+    .
+    .
+    .
+  end
+end
+```
+#2.3.2 Validation
+
+In model file for Microposts, add length validation for max length: 
+
+#validates :content, length: { maximum: 140 }
+
+this create error message in view automatically
+
+#2.3.3 has_many, belongs_to and `rails console`
+
+express many-to-one relationship in User model
+```
+class User < ApplicationRecord
+  has_many :microposts
+end
+
+class Micropost < ApplicationRecord
+  belongs_to :user
+  validates :content, length: { maximum: 140 }
+end
+```
+
+`rails console` 
+
+opens a rails console
+
+sample instructions: 
+
+#first_user = User.first
+gets first user record
+#first_user.microposts
+gets user's microposts
+#micropost = first_user.microposts.first
+gets first micropost
+#micropost.user
+this just gives error, but supposed to give user
+ahh, I forgot to add `belongs_to :user to Micropost model
+quitting console and restarting, then for short typing: 
+#User.first.microposts.first.user
+gives me the user record, cool. 
+
+also, make a "property" required: 
+```
+  validates :content, length: { maximum: 140 },
+                      presence: true
+```
+
+#Edit the user view to show the user first micrpost: 
+```
+<p>
+  <strong>First Post:</strong>
+  <%= @user.microposts.first.content %>
+</p>
+```
+
+
+#2.3.4 Inheritance Hierarchies
